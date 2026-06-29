@@ -17,6 +17,7 @@ export default function AnimaisPage() {
   const supabase = createClient()
   const [animais, setAnimais] = useState<Animal[]>([])
   const [search, setSearch] = useState('')
+  const [filtroLocal, setFiltroLocal] = useState('TODOS')
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [form, setForm] = useState<Record<string, string>>(empty())
@@ -37,9 +38,13 @@ export default function AnimaisPage() {
     return () => { supabase.removeChannel(ch) }
   }, [load, supabase])
 
+  const localizacoes = Array.from(new Set(animais.map(a => a.localizacao).filter(Boolean))).sort() as string[]
+
   const filtered = animais.filter(a => {
     const q = search.toLowerCase()
-    return !q || a.nome.toLowerCase().includes(q) || (a.localizacao ?? '').toLowerCase().includes(q) || (a.finalidade ?? '').toLowerCase().includes(q) || (a.tipo ?? '').toLowerCase().includes(q)
+    const matchSearch = !q || a.nome.toLowerCase().includes(q) || (a.localizacao ?? '').toLowerCase().includes(q) || (a.finalidade ?? '').toLowerCase().includes(q) || (a.tipo ?? '').toLowerCase().includes(q)
+    const matchLocal = filtroLocal === 'TODOS' || a.localizacao === filtroLocal
+    return matchSearch && matchLocal
   })
 
   function openNew() { setEditingId(null); setForm(empty()); setShowForm(true); setError('') }
@@ -128,10 +133,16 @@ export default function AnimaisPage() {
         </div>
       )}
 
-      {/* Busca */}
-      <div className="relative">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input className="input pl-9" placeholder="Buscar por nome, localização, finalidade..." value={search} onChange={e => setSearch(e.target.value)} />
+      {/* Busca + Filtro Localização */}
+      <div className="flex gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input className="input pl-9" placeholder="Buscar por nome, localização, finalidade..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <select className="input w-auto" value={filtroLocal} onChange={e => setFiltroLocal(e.target.value)}>
+          <option value="TODOS">Todas as localizações</option>
+          {localizacoes.map(l => <option key={l} value={l}>{l}</option>)}
+        </select>
       </div>
 
       {/* Tabela */}

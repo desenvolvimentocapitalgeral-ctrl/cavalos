@@ -1,15 +1,16 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BarChart3, Star, Users, DollarSign, FileSearch, Menu, X } from 'lucide-react'
+import { BarChart3, Star, Users, DollarSign, FileSearch, Menu, X, Dna } from 'lucide-react'
 import { useState } from 'react'
 
 const links = [
-  { href: '/',               label: 'Dashboard',    icon: BarChart3 },
-  { href: '/animais',        label: 'Animais',      icon: Star },
-  { href: '/financeiro',     label: 'Financeiro',   icon: DollarSign },
-  { href: '/fornecedores',   label: 'Fornecedores', icon: Users },
-  { href: '/auditoria',      label: 'Auditoria',    icon: FileSearch },
+  { href: '/',             label: 'Dashboard',  icon: BarChart3 },
+  { href: '/animais',      label: 'Animais',    icon: Star },
+  { href: '/genetica',     label: 'Genética',   icon: Dna },
+  { href: '/financeiro',   label: 'Financeiro', icon: DollarSign },
+  { href: '/fornecedores', label: 'Fornecedores', icon: Users },
+  { href: '/auditoria',    label: 'Auditoria',  icon: FileSearch },
 ]
 
 export default function Nav() {
@@ -27,49 +28,32 @@ export default function Nav() {
             <span className="font-bold text-lg tracking-tight">Haras Monte Sião</span>
           </div>
 
-          {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {links.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
+              <Link key={href} href={href}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  path === href
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  path === href ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <Icon size={16} />
-                {label}
+                <Icon size={16} />{label}
               </Link>
             ))}
           </nav>
 
-          {/* Mobile toggle */}
-          <button
-            className="md:hidden p-2 rounded-lg hover:bg-white/10"
-            onClick={() => setOpen(!open)}
-          >
+          <button className="md:hidden p-2 rounded-lg hover:bg-white/10" onClick={() => setOpen(!open)}>
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
 
-        {/* Mobile menu */}
         {open && (
           <nav className="md:hidden pb-4 flex flex-col gap-1">
             {links.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
+              <Link key={href} href={href} onClick={() => setOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium ${
-                  path === href
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                  path === href ? 'bg-white/20 text-white' : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <Icon size={16} />
-                {label}
+                <Icon size={16} />{label}
               </Link>
             ))}
           </nav>

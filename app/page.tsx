@@ -60,18 +60,21 @@ export default function Dashboard() {
   const [topAnimais, setTopAnimais] = useState<AnimalTop[]>([])
   const [qtdAnimais, setQtdAnimais] = useState(0)
   const [qtdFornec, setQtdFornec] = useState(0)
+  const [qtdGenetica, setQtdGenetica] = useState(0)
   const [loading, setLoading] = useState(true)
   const [lastUpdate, setLastUpdate] = useState('')
 
   const load = useCallback(async () => {
-    const [{ data: lancs }, { count: ca }, { count: cf }] = await Promise.all([
+    const [{ data: lancs }, { count: ca }, { count: cf }, { count: cg }] = await Promise.all([
       supabase.from('lancamentos').select('animal_nome, situacao, valor, tipo'),
       supabase.from('animais').select('*', { count: 'exact', head: true }),
       supabase.from('fornecedores').select('*', { count: 'exact', head: true }),
+      supabase.from('lancamentos').select('*', { count: 'exact', head: true }).eq('tipo', 'Genetica'),
     ])
 
     setQtdAnimais(ca ?? 0)
     setQtdFornec(cf ?? 0)
+    setQtdGenetica(cg ?? 0)
 
     if (lancs) {
       const animal = lancs.filter(l => l.tipo !== 'Genetica')
@@ -155,10 +158,14 @@ export default function Dashboard() {
       </div>
 
       {/* Contadores */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <div className="card p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Animais Cadastrados</p>
           <p className="text-3xl font-bold text-[#1F3864]">{qtdAnimais}</p>
+        </div>
+        <div className="card p-5">
+          <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Lançamentos Genética</p>
+          <p className="text-3xl font-bold text-purple-700">{qtdGenetica}</p>
         </div>
         <div className="card p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Fornecedores</p>
