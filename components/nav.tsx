@@ -1,12 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BarChart3, Horse, Users, DollarSign, FileSearch, Menu, X } from 'lucide-react'
+import { BarChart3, Star, Users, DollarSign, FileSearch, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 
 const links = [
   { href: '/',               label: 'Dashboard',    icon: BarChart3 },
-  { href: '/animais',        label: 'Animais',      icon: Horse },
+  { href: '/animais',        label: 'Animais',      icon: Star },
   { href: '/financeiro',     label: 'Financeiro',   icon: DollarSign },
   { href: '/fornecedores',   label: 'Fornecedores', icon: Users },
   { href: '/auditoria',      label: 'Auditoria',    icon: FileSearch },
