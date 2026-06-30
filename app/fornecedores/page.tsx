@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { brl } from '@/lib/format'
 import { exportToExcel } from '@/lib/export'
+import { confirmPassword } from '@/lib/auth'
 import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Fornecedor { id: string; nome: string; nome_curto: string | null; cnpj_cpf: string | null }
@@ -65,6 +66,7 @@ export default function FornecedoresPage() {
   }
 
   async function save() {
+    if (!confirmPassword()) return
     setSaving(true); setError('')
     if (!form.nome.trim()) { setError('Nome obrigatório'); setSaving(false); return }
     const payload = { nome: form.nome.trim(), nome_curto: form.nome_curto.trim() || form.nome.trim(), cnpj_cpf: form.cnpj_cpf.trim() || null }
@@ -77,6 +79,7 @@ export default function FornecedoresPage() {
 
   async function remove(id: string) {
     if (!confirm('Excluir este fornecedor? Os lançamentos continuarão mas sem vínculo.')) return
+    if (!confirmPassword()) return
     await supabase.from('fornecedores').delete().eq('id', id)
   }
 

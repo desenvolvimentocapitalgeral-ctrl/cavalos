@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { brl, sitLabel, sitColor } from '@/lib/format'
 import { exportToExcel } from '@/lib/export'
+import { confirmPassword } from '@/lib/auth'
 import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Lanc {
@@ -72,6 +73,7 @@ export default function GeneticaPage() {
   }
 
   async function save() {
+    if (!confirmPassword()) return
     setSaving(true); setError('')
     if (!form.animal_nome.trim()) { setError('Animal/garanhão obrigatório'); setSaving(false); return }
     if (!form.fornecedor_nome.trim()) { setError('Fornecedor obrigatório'); setSaving(false); return }
@@ -92,6 +94,7 @@ export default function GeneticaPage() {
 
   async function remove(id: string) {
     if (!confirm('Excluir este lançamento de genética?')) return
+    if (!confirmPassword()) return
     await supabase.from('lancamentos').delete().eq('id', id)
   }
 

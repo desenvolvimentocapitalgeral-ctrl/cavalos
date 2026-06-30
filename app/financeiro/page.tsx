@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { brl, sitLabel } from '@/lib/format'
 import { exportToExcel } from '@/lib/export'
+import { confirmPassword } from '@/lib/auth'
 import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Lanc {
@@ -100,6 +101,7 @@ export default function FinanceiroPage() {
   }
 
   async function save() {
+    if (!confirmPassword()) return
     setSaving(true); setError('')
     if (!form.animal_nome.trim()) { setError('Nome do animal obrigatório'); setSaving(false); return }
     if (!form.fornecedor_nome.trim()) { setError('Fornecedor obrigatório'); setSaving(false); return }
@@ -123,6 +125,7 @@ export default function FinanceiroPage() {
     const ids = row.cells[situacao]?.map(c => c.id) ?? []
     if (ids.length === 0) return
     if (!confirm(`Excluir ${ids.length > 1 ? 'estes lançamentos' : 'este lançamento'} (${sitLabel(situacao)})?`)) return
+    if (!confirmPassword()) return
     await supabase.from('lancamentos').delete().in('id', ids)
   }
 

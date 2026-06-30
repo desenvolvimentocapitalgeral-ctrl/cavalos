@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { sitLabel, sitColor } from '@/lib/format'
 import { exportToExcel } from '@/lib/export'
+import { confirmPassword } from '@/lib/auth'
 import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Animal {
@@ -57,6 +58,7 @@ export default function AnimaisPage() {
   }
 
   async function save() {
+    if (!confirmPassword()) return
     setSaving(true); setError('')
     if (!form.nome.trim()) { setError('Nome obrigatório'); setSaving(false); return }
     const payload = { nome: form.nome.trim(), localizacao: form.localizacao || null, finalidade: form.finalidade || null, tipo: form.tipo || null, comprador: form.comprador || null, situacao: form.situacao, observacao: form.observacao || null }
@@ -69,6 +71,7 @@ export default function AnimaisPage() {
 
   async function remove(id: string) {
     if (!confirm('Excluir este animal? Os lançamentos financeiros não serão excluídos.')) return
+    if (!confirmPassword()) return
     await supabase.from('animais').delete().eq('id', id)
   }
 
