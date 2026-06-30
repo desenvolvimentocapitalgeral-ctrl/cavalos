@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { brl } from '@/lib/format'
-import { Plus, Search, Pencil, Trash2, X, Check } from 'lucide-react'
+import { exportToExcel } from '@/lib/export'
+import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Fornecedor { id: string; nome: string; nome_curto: string | null; cnpj_cpf: string | null }
 interface FornTotal { total: number; vencido: number }
@@ -84,14 +85,24 @@ export default function FornecedoresPage() {
 
   const sorted = [...filtered].sort((a, b) => (totais[b.id]?.total ?? 0) - (totais[a.id]?.total ?? 0))
 
+  function handleExport() {
+    exportToExcel(sorted.map(f => ({
+      Fornecedor: f.nome_curto ?? f.nome, 'Nome Completo': f.nome, 'CNPJ/CPF': f.cnpj_cpf ?? '',
+      Vencido: totais[f.id]?.vencido ?? 0, Total: totais[f.id]?.total ?? 0,
+    })), 'fornecedores')
+  }
+
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Fornecedores</h1>
           <p className="text-sm text-gray-500">{items.length} cadastrados</p>
         </div>
-        <button className="btn-primary" onClick={openNew}><Plus size={16} /> Novo Fornecedor</button>
+        <div className="flex gap-2">
+          <button className="btn-secondary" onClick={handleExport} disabled={sorted.length === 0}><Download size={16} /> Exportar Excel</button>
+          <button className="btn-primary" onClick={openNew}><Plus size={16} /> Novo Fornecedor</button>
+        </div>
       </div>
 
       {showForm && (

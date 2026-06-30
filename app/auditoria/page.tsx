@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { brl } from '@/lib/format'
-import { ChevronDown, ChevronRight, Search, RefreshCw } from 'lucide-react'
+import { exportToExcel } from '@/lib/export'
+import { ChevronDown, ChevronRight, Search, RefreshCw, Download } from 'lucide-react'
 
 interface Doc { documento: string; historico: string; situacao: string; valor: number }
 interface FornRow { nome: string; pago: number; vencido: number; a_vencer: number; distratos: number; descontos: number; total: number; docs: Doc[] }
@@ -121,6 +122,22 @@ export default function AuditoriaPage() {
   const listed  = filtered.filter(g => g.na_listagem)
   const outside = filtered.filter(g => !g.na_listagem)
 
+  function handleExport() {
+    const rows: Record<string, unknown>[] = []
+    for (const g of filtered) {
+      for (const f of g.fornecedores) {
+        for (const d of f.docs) {
+          rows.push({
+            Animal: g.animal_nome, Localização: g.localizacao, 'Na Listagem': g.na_listagem ? 'Sim' : 'Não',
+            Fornecedor: f.nome, Documento: d.documento, Histórico: d.historico,
+            Situação: d.situacao, Valor: d.valor,
+          })
+        }
+      }
+    }
+    exportToExcel(rows, 'auditoria')
+  }
+
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -134,6 +151,7 @@ export default function AuditoriaPage() {
             <input type="checkbox" checked={showFora} onChange={e => setShowFora(e.target.checked)} className="rounded" />
             Mostrar fora da listagem
           </label>
+          <button className="btn-secondary" onClick={handleExport} disabled={filtered.length === 0}><Download size={14} /> Exportar Excel</button>
           <button className="btn-secondary" onClick={load}><RefreshCw size={14} /> Atualizar</button>
         </div>
       </div>

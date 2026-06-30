@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { brl, sitLabel, sitColor } from '@/lib/format'
-import { Plus, Search, Pencil, Trash2, X, Check } from 'lucide-react'
+import { exportToExcel } from '@/lib/export'
+import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Lanc {
   id: string; animal_nome: string; fornecedor_nome: string
@@ -97,6 +98,13 @@ export default function GeneticaPage() {
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [key]: e.target.value }))
 
+  function handleExport() {
+    exportToExcel(filtered.map(l => ({
+      'Animal / Garanhão': l.animal_nome, Fornecedor: l.fornecedor_nome, Histórico: l.historico ?? '',
+      Situação: sitLabel(l.situacao), Valor: Number(l.valor),
+    })), 'genetica')
+  }
+
   return (
     <div className="space-y-5">
       {/* Header */}
@@ -105,7 +113,10 @@ export default function GeneticaPage() {
           <h1 className="text-2xl font-bold text-gray-900">🧬 Genética</h1>
           <p className="text-sm text-gray-500">{lancamentos.length} lançamentos · {brl(totalGeral)} total</p>
         </div>
-        <button className="btn-primary" onClick={openNew}><Plus size={16} /> Novo Lançamento</button>
+        <div className="flex gap-2">
+          <button className="btn-secondary" onClick={handleExport} disabled={filtered.length === 0}><Download size={16} /> Exportar Excel</button>
+          <button className="btn-primary" onClick={openNew}><Plus size={16} /> Novo Lançamento</button>
+        </div>
       </div>
 
       {/* Formulário */}

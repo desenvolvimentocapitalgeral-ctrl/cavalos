@@ -3,7 +3,8 @@ export const dynamic = 'force-dynamic'
 import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { sitLabel, sitColor } from '@/lib/format'
-import { Plus, Search, Pencil, Trash2, X, Check } from 'lucide-react'
+import { exportToExcel } from '@/lib/export'
+import { Plus, Search, Pencil, Trash2, X, Check, Download } from 'lucide-react'
 
 interface Animal {
   id: string; nome: string; localizacao: string | null; finalidade: string | null
@@ -74,15 +75,25 @@ export default function AnimaisPage() {
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [key]: e.target.value }))
 
+  function handleExport() {
+    exportToExcel(filtered.map(a => ({
+      Nome: a.nome, Localização: a.localizacao ?? '', Finalidade: a.finalidade ?? '',
+      Tipo: a.tipo ?? '', Comprador: a.comprador ?? '', Situação: sitLabel(a.situacao), Observação: a.observacao ?? '',
+    })), 'animais')
+  }
+
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Animais</h1>
           <p className="text-sm text-gray-500">{animais.length} cadastrados · {filtered.length} exibidos</p>
         </div>
-        <button className="btn-primary" onClick={openNew}><Plus size={16} /> Novo Animal</button>
+        <div className="flex gap-2">
+          <button className="btn-secondary" onClick={handleExport} disabled={filtered.length === 0}><Download size={16} /> Exportar Excel</button>
+          <button className="btn-primary" onClick={openNew}><Plus size={16} /> Novo Animal</button>
+        </div>
       </div>
 
       {/* Formulário */}
